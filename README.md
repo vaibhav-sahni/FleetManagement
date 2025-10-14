@@ -7,8 +7,8 @@ How to compile and run
 - This is a Maven project. From project root run:
 
 ```bash
-mvn compile
-mvn exec:java -Dexec.mainClass=Main
+mvn clean install
+mvn exec:java
 ```
 
 Or compile/run with javac/java (simple):

@@ -9,8 +9,11 @@ import java.util.Map;
 
 import exceptions.InsufficientFuelException;
 import exceptions.InvalidOperationException;
+import exceptions.OverloadException;
+import interfaces.CargoCarrier;
 import interfaces.FuelConsumable;
 import interfaces.Maintainable;
+import interfaces.PassengerCarrier;
 import vehicles.Vehicle;
 
 public class FleetManager {
@@ -51,6 +54,28 @@ public class FleetManager {
         }
     }
 
+    public void startJourney(String id, double distance){
+        for (Vehicle v : fleet){
+            if (v.getID().equals(id)){
+                try {
+                    v.move(distance);
+                    System.out.printf("Vehicle %s moved %.2f km.\n", id, distance);
+                    return;
+                } catch (InsufficientFuelException e) {
+                    System.out.println("Insufficient fuel in " + v.getID() + ": " + e.getMessage());
+                    return;
+                } catch (InvalidOperationException e) {
+                    System.out.println("Invalid operation in " + v.getID() + ": " + e.getMessage());
+                    return;
+                } catch (Exception e) {
+                    System.out.println("Error occured while moving " + v.getID() + ": " + e.getMessage());
+                    return;
+                }
+            }
+        }
+        System.out.printf("Vehicle with ID %s not found.\n", id);
+    }
+
     public void refuelAll(double amount) { //Included in CLI but not in Fleetmanager documentation
     for (Vehicle v : fleet) {
         if (v instanceof FuelConsumable f) {
@@ -62,6 +87,110 @@ public class FleetManager {
         }
     }
 }
+    public void refuelVehicle(String id, double amount){  
+        for (Vehicle v : fleet) {
+            if (v.getID().equals(id) && v instanceof FuelConsumable f) {
+                try {
+                    f.refuel(amount);
+                    System.out.println("Refueled " + id + " with " + amount + " liters.");
+                    return;
+                } catch (InvalidOperationException e) {
+                    System.out.println("Refuel failed for " + v.getID() + ": " + e.getMessage());
+                    return;
+                }
+            }
+        }
+        System.out.println("Vehicle with ID " + id + " not found or is not fuel consumable.");
+
+    }
+
+    public void loadCargo(String id, double weight){
+        for (Vehicle v : fleet) {
+            if (v.getID().equals(id) && v instanceof CargoCarrier c) {
+                try {
+                    c.loadCargo(weight);
+                    System.out.println("Loaded " + weight + " kg into " + id);
+                    return;
+                } catch (InvalidOperationException e) {
+                    System.out.println("Load cargo failed for " + v.getID() + ": " + e.getMessage());
+                    return;
+                } catch (OverloadException e) {
+                    System.out.println("Overload error for " + v.getID() + ": " + e.getMessage());
+                    return;
+                    
+            }
+        }
+        System.out.println("Vehicle with ID " + id + " not found or not of cargocarrier type.");
+    }
+    }
+
+    public void unloadCargo(String id, double weight){
+        for (Vehicle v : fleet) {
+            if (v.getID().equals(id) && v instanceof CargoCarrier c) {
+                try {
+                    c.unloadCargo(weight);
+                    System.out.println("Unloaded " + weight + " kg from " + id);
+                    return;
+                } catch (InvalidOperationException e) {
+                    System.out.println("Unload cargo failed for " + v.getID() + ": " + e.getMessage());
+                    return;
+                }
+            }
+        }
+        System.out.println("Vehicle with ID " + id + " not found or not of cargocarrier type.");
+    }
+
+    public void displayCargoStatus(String id){
+        for (Vehicle v : fleet) {
+            if (v.getID().equals(id) && v instanceof CargoCarrier c) {
+                System.out.printf("Vehicle %s: Current Cargo = %.2f kg, Capacity = %.2f kg\n", id, c.getCurrentCargo(), c.getCargoCapacity());
+                return;
+            }
+        }
+        System.out.println("Vehicle with ID " + id + " not found or not of cargocarrier type.");
+    }
+
+    public void addPassengers(String id, int count){
+        for (Vehicle v : fleet) {
+            if (v.getID().equals(id) && v instanceof PassengerCarrier p) {
+                try {
+                    p.boardPassengers(count);
+                    System.out.println("Boarded " + count + " passengers into " + id);
+                    return;
+                } catch (OverloadException e) {
+                    System.out.println("Overload error for " + v.getID() + ": " + e.getMessage());
+                    return;
+                }
+            }
+        }
+        System.out.println("Vehicle with ID " + id + " not found or not of PassengerCarrier type.");
+    }
+
+    public void removePassengers(String id, int count){
+        for (Vehicle v : fleet) {
+            if (v.getID().equals(id) && v instanceof PassengerCarrier p) {
+                try {
+                    p.disembarkPassengers(count);
+                    System.out.println("Disembarked " + count + " passengers from " + id);
+                    return;
+                } catch (InvalidOperationException e) {
+                    System.out.println("Disembark failed for " + v.getID() + ": " + e.getMessage());
+                    return;
+                }
+            }
+        }
+        System.out.println("Vehicle with ID " + id + " not found or not of PassengerCarrier type.");
+    }
+
+    public void displayPassengerStatus(String id){
+        for (Vehicle v : fleet) {
+            if (v.getID().equals(id) && v instanceof PassengerCarrier p) {
+                System.out.printf("Vehicle %s: Current Passengers = %d, Capacity = %d\n", id, p.getCurrentPassengers(), p.getPassengerCapacity());
+                return;
+            }
+        }
+        System.out.println("Vehicle with ID " + id + " not found or not of PassengerCarrier type.");
+    }
 
     double getTotalFuelConsumption(double distance){
         double total = 0.0;

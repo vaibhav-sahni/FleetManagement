@@ -78,10 +78,18 @@ public class Main {
         }
     }
 
-    private static void startJourneyCLI() {
+    private static void startAllJourneyCLI() {
         System.out.println("Enter distance: ");
         double distance = sc.nextDouble();
         fleetManager.startAllJourneys(distance);
+    }
+
+    private static void startJourneyCLI() {
+        System.out.print("Enter vehicle ID to start journey: ");
+        String id = sc.next().trim();
+        System.out.println("Enter distance: ");
+        double distance = sc.nextDouble();
+        fleetManager.startJourney(id, distance);
     }
 
     private static void refuelAllCLI() {
@@ -117,6 +125,57 @@ public class Main {
         }
     }
 
+    private static void boardPassengersCLI() {
+        System.out.print("Enter vehicle ID to board passengers: ");
+        String id = sc.next().trim();
+        System.out.print("Enter number of passengers to board: ");
+        int numPassengers = sc.nextInt();
+        fleetManager.addPassengers(id, numPassengers);
+    }
+
+    private static void unboardPassengersCLI() {
+        System.out.print("Enter vehicle ID to unboard passengers: ");
+        String id = sc.next().trim();
+        System.out.print("Enter number of passengers to unboard: ");
+        int numPassengers = sc.nextInt();
+        fleetManager.removePassengers(id, numPassengers);
+    }
+
+    private static void displayPassengerStatusCLI() {
+        System.out.print("Enter vehicle ID to display passenger status: ");
+        String id = sc.next().trim();
+        fleetManager.displayPassengerStatus(id);
+    }
+
+    private static void loadCargoCLI() {
+        System.out.print("Enter vehicle ID to load cargo: ");
+        String id = sc.next().trim();
+        System.out.print("Enter cargo weight to load: ");
+        double weight = sc.nextDouble();
+        fleetManager.loadCargo(id, weight);
+    }
+
+    private static void unloadCargoCLI() {
+        System.out.print("Enter vehicle ID to unload cargo: ");
+        String id = sc.next().trim();
+        System.out.print("Enter cargo weight to unload: ");
+        double weight = sc.nextDouble();
+        fleetManager.unloadCargo(id, weight);
+    }
+    private static void displayCargoStatusCLI() {
+        System.out.print("Enter vehicle ID to display cargo status: ");
+        String id = sc.next().trim();
+        fleetManager.displayCargoStatus(id);
+    }
+
+    private static void refuelVehicleCLI() {
+        System.out.print("Enter vehicle ID to refuel: ");
+        String id = sc.next().trim();
+        System.out.print("Enter fuel amount to add: ");
+        double amount = sc.nextDouble();
+        fleetManager.refuelVehicle(id, amount);
+    }
+
     
     public static void main(String[] args) {
         boolean exit = false;
@@ -124,7 +183,7 @@ public class Main {
             System.out.println("\n=== Fleet Management Menu ===");
             System.out.println("1. Add Vehicle");
             System.out.println("2. Remove Vehicle");
-            System.out.println("3. Start Journey");
+            System.out.println("3. Start ALL Journey");
             System.out.println("4. Refuel All");
             System.out.println("5. Perform Maintenance");
             System.out.println("6. Generate Report");
@@ -132,7 +191,15 @@ public class Main {
             System.out.println("8. Load Fleet");
             System.out.println("9. Search by Type");
             System.out.println("10. List Vehicles Needing Maintenance");
-            System.out.println("11. Exit");
+            System.out.println("11. Board Passengers");
+            System.out.println("12. Unboard Passengers");  
+            System.out.println("13. Display Passenger Status");
+            System.out.println("14. Load Cargo");
+            System.out.println("15. Unload Cargo");
+            System.out.println("16. Display Cargo Status");
+            System.out.println("17. Refuel Vehicle");
+            System.out.println("18. Start Journey for a Vehicle");
+            System.out.println("19. Exit");
 
 
             System.out.println("Enter your choice: ");
@@ -141,7 +208,7 @@ public class Main {
             switch (choice) {
                 case 1 -> addVehicleCLI();
                 case 2 -> removeVehicleCLI();
-                case 3 -> startJourneyCLI();
+                case 3 -> startAllJourneyCLI();
                 case 4 -> refuelAllCLI();
                 case 5 -> fleetManager.maintainAll();
                 case 6 -> System.out.println(fleetManager.generateReport());
@@ -149,7 +216,15 @@ public class Main {
                 case 8 -> fleetManager.loadFleet();
                 case 9 -> searchByTypeCLI();
                 case 10 -> listMaintenanceCLI();
-                case 11 -> {
+                case 11 -> boardPassengersCLI();
+                case 12 -> unboardPassengersCLI();
+                case 13 -> displayPassengerStatusCLI();
+                case 14 -> loadCargoCLI();
+                case 15 -> unloadCargoCLI();
+                case 16 -> displayCargoStatusCLI();
+                case 17 -> refuelVehicleCLI();
+                case 18 -> startJourneyCLI();
+                case 19 -> {
                     System.out.println("Exiting program...");
                     exit = true;
                 }

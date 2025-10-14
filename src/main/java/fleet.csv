@@ -1,0 +1,6 @@
+Car,1,toyota,34.00,4,26.67,1100.00,false
+CargoShip,2,nosail,12.00,false,75.00,0.00,100.00,false
+Truck,3,eicher,40.00,8,87.50,0.00,100.00,false
+Bus,12,tata,40.00,6,90.00,50,0,100.00,false
+CargoShip,9,wsail,50.00,true,0.00,0.00,1100.00,false
+Airplane,43,boeing,99.00,2.00,80.00,200,0,0.00,100.00,false

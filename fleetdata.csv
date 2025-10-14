@@ -1,0 +1,6 @@
+#type,id,model,maxSpeed,<type-specific-fields>... 
+Car,CAR1,ToyotaCamry,180.00,4,50.00,1200.00,false
+Truck,TRK1,VolvoFH,140.00,6,200.00,5000.00,25000.00,true
+Bus,BUS1,MercedesIntouro,100.00,4,100.00,50,12,5000.00,false
+Airplane,APL1,Boeing737,900.00,12000.00,5000.00,200,0,2000.00,100000.00,true
+CargoShip,CS1,MaerskMC,30.00,false,0.00,10000.00,500000.00,true

@@ -176,6 +176,40 @@ public class Main {
         fleetManager.refuelVehicle(id, amount);
     }
 
+    private static void listDistinctModelsCLI() {
+        System.out.println("Distinct models (sorted):");
+        var models = fleetManager.getDistinctModelsSorted();
+        if (models.isEmpty()) System.out.println("No models available.");
+        else models.forEach(System.out::println);
+    }
+
+    private static void showFastestSlowestCLI() {
+        var fastest = fleetManager.getFastestVehicle();
+        var slowest = fleetManager.getSlowestVehicle();
+        if (fastest != null) {
+            System.out.println("Fastest vehicle:");
+            fastest.displayInfo();
+        } else System.out.println("No vehicles available");
+        if (slowest != null) {
+            System.out.println("Slowest vehicle:");
+            slowest.displayInfo();
+        }
+    }
+
+    private static void displayFleetSortedByModelCLI() {
+        System.out.println("Fleet sorted by model:");
+        var list = fleetManager.getFleetSortedByModel();
+        if (list.isEmpty()) System.out.println("No vehicles available");
+        else list.forEach(Vehicle::displayInfo);
+    }
+
+    private static void displayFleetSortedBySpeedCLI() {
+        System.out.println("Fleet sorted by speed (desc):");
+        var list = fleetManager.getFleetSortedBySpeedDesc();
+        if (list.isEmpty()) System.out.println("No vehicles available");
+        else list.forEach(Vehicle::displayInfo);
+    }
+
     
     public static void main(String[] args) {
         boolean exit = false;
@@ -199,7 +233,11 @@ public class Main {
             System.out.println("16. Display Cargo Status");
             System.out.println("17. Refuel Vehicle");
             System.out.println("18. Start Journey for a Vehicle");
-            System.out.println("19. Exit");
+            System.out.println("19. Distinct Models (sorted)");
+            System.out.println("20. Fastest & Slowest Vehicle");
+            System.out.println("21. Display Fleet sorted by Model");
+            System.out.println("22. Display Fleet sorted by Speed");
+            System.out.println("23. Exit");
 
 
             System.out.println("Enter your choice: ");
@@ -224,7 +262,11 @@ public class Main {
                 case 16 -> displayCargoStatusCLI();
                 case 17 -> refuelVehicleCLI();
                 case 18 -> startJourneyCLI();
-                case 19 -> {
+                case 19 -> listDistinctModelsCLI();
+                case 20 -> showFastestSlowestCLI();
+                case 21 -> displayFleetSortedByModelCLI();
+                case 22 -> displayFleetSortedBySpeedCLI();
+                case 23 -> {
                     System.out.println("Exiting program...");
                     exit = true;
                 }

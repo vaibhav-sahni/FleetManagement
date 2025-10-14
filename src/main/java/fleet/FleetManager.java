@@ -19,6 +19,10 @@ import vehicles.Vehicle;
 public class FleetManager {
     private List<Vehicle> fleet = new ArrayList<>();
 
+    // Keep a HashSet of model names for uniqueness demonstration (distinct models)
+    // TreeSet views can be created on demand for sorted order.
+    private java.util.Set<String> modelSet = new java.util.HashSet<>();
+
     public void addVehicle(Vehicle v) throws InvalidOperationException{
         for(Vehicle x : fleet){
             if(x.getID().equals(v.getID())){
@@ -26,6 +30,7 @@ public class FleetManager {
             }
         }
         fleet.add(v);
+        if (v.getModel() != null) modelSet.add(v.getModel());
     }
 
     public void removeVehicle(String id) throws InvalidOperationException{
@@ -235,10 +240,56 @@ public class FleetManager {
 
      public void loadFleet() {
         fleet = Persistence.loadFleet(); // overwrite with loaded list
+        // Rebuild model set after loading
+        modelSet.clear();
+        for (Vehicle v : fleet) if (v.getModel() != null) modelSet.add(v.getModel());
     }
 
     public List<Vehicle> getAll() {
-        return fleet;
+        // Return a defensive copy to avoid external modification
+        return new ArrayList<>(fleet);
+    }
+
+    /**
+     * Return a sorted list (by model name) of distinct model names using a TreeSet.
+     */
+    public java.util.List<String> getDistinctModelsSorted() {
+        java.util.TreeSet<String> t = new java.util.TreeSet<>(modelSet);
+        return new java.util.ArrayList<>(t);
+    }
+
+    /**
+     * Return the vehicle with maximum maxSpeed. Returns null if fleet empty.
+     */
+    public Vehicle getFastestVehicle() {
+        if (fleet.isEmpty()) return null;
+        return Collections.max(fleet, java.util.Comparator.comparingDouble(Vehicle::getMaxSpeed));
+    }
+
+    /**
+     * Return the vehicle with minimum maxSpeed. Returns null if fleet empty.
+     */
+    public Vehicle getSlowestVehicle() {
+        if (fleet.isEmpty()) return null;
+        return Collections.min(fleet, java.util.Comparator.comparingDouble(Vehicle::getMaxSpeed));
+    }
+
+    /**
+     * Sort fleet in-place by model name (lexicographical) and return a copy of sorted list.
+     */
+    public java.util.List<Vehicle> getFleetSortedByModel() {
+        java.util.List<Vehicle> copy = new java.util.ArrayList<>(fleet);
+        copy.sort(java.util.Comparator.comparing(Vehicle::getModel, java.util.Comparator.nullsFirst(String::compareTo)));
+        return copy;
+    }
+
+    /**
+     * Sort fleet by maxSpeed and return a new list (fastest first).
+     */
+    public java.util.List<Vehicle> getFleetSortedBySpeedDesc() {
+        java.util.List<Vehicle> copy = new java.util.ArrayList<>(fleet);
+        copy.sort(java.util.Comparator.comparingDouble(Vehicle::getMaxSpeed).reversed());
+        return copy;
     }
 
     public String generateReport(){

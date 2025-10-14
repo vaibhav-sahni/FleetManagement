@@ -16,10 +16,12 @@ import vehicles.Truck;
 import vehicles.Vehicle;
 
 public class Persistence{
-    private static final String FILE_NAME = "fleet.csv";
+    private static final String FILE_NAME = "fleetdata.csv";
 
     public static void saveFleet(List<Vehicle> fleet){ //dont hv to create objects to access this method
         try (PrintWriter writer = new PrintWriter(new FileWriter(FILE_NAME))) {
+            // Optional header for clarity (ignored by loader)
+            writer.println("#type,id,model,maxSpeed,<type-specific-fields>... ");
         for (Vehicle v : fleet) {
             switch (v) {
                 case Car c -> writer.printf("Car,%s,%s,%.2f,%d,%.2f,%.2f,%b%n",
@@ -59,17 +61,21 @@ public class Persistence{
         }
     }
 
-public static List<Vehicle> loadFleet() {
+    public static List<Vehicle> loadFleet() {
     List<Vehicle> fleet = new ArrayList<>();
     try (BufferedReader br = new BufferedReader(new FileReader(FILE_NAME))) {
         String line;
+        int lineNo = 0;
         while ((line = br.readLine()) != null) {
+            lineNo++;
+            line = line.trim();
+            if (line.isEmpty() || line.startsWith("#")) continue; // skip header/comments
             String[] parts = line.split(",");
             String type = parts[0]; // vehicle type
             try {
                 switch (type) {
                     case "Car" -> {
-                        //Car,id,model,maxSpeed,numWheels,fuelLevel,currentMileage,needsMaintenance
+                        if (parts.length < 8) throw new IllegalArgumentException("Not enough fields for Car");
                         Car c = new Car(parts[1], parts[2],
                                 Double.parseDouble(parts[3]),   // maxSpeed
                                 Integer.parseInt(parts[4]));    // numWheels
@@ -79,7 +85,7 @@ public static List<Vehicle> loadFleet() {
                         fleet.add(c);
                     }
                     case "Truck" -> {
-                        //Truck,id,model,maxSpeed,numWheels,fuelLevel,currentCargo,currentMileage,needsMaintenance
+                        if (parts.length < 9) throw new IllegalArgumentException("Not enough fields for Truck");
                         Truck t = new Truck(parts[1], parts[2],
                                 Double.parseDouble(parts[3]),   // maxSpeed
                                 Integer.parseInt(parts[4]));    // numWheels
@@ -90,7 +96,7 @@ public static List<Vehicle> loadFleet() {
                         fleet.add(t);
                     }
                     case "Bus" -> {
-                        //Bus,id,model,maxSpeed,numWheels,fuelLevel,passengerCapacity,currentPassengers,currentMileage,needsMaintenance
+                        if (parts.length < 10) throw new IllegalArgumentException("Not enough fields for Bus");
                         Bus b = new Bus(parts[1], parts[2],
                                 Double.parseDouble(parts[3]),   // maxSpeed
                                 Integer.parseInt(parts[4]));    // numWheels
@@ -101,7 +107,7 @@ public static List<Vehicle> loadFleet() {
                         fleet.add(b);
                     }
                     case "Airplane" -> {
-                        //Airplane,id,model,maxSpeed,maxAltitude,fuelLevel,passengerCapacity,currentPassengers,currentCargo,currentMileage,needsMaintenance
+                        if (parts.length < 11) throw new IllegalArgumentException("Not enough fields for Airplane");
                         Airplane a = new Airplane(parts[1], parts[2],
                                 Double.parseDouble(parts[3]),   // maxSpeed
                                 Double.parseDouble(parts[4]));  // maxAltitude
@@ -113,7 +119,7 @@ public static List<Vehicle> loadFleet() {
                         fleet.add(a);
                     }
                     case "CargoShip" -> {
-                        //CargoShip,id,model,maxSpeed,hasSail,fuelLevel,currentCargo,currentMileage,needsMaintenance
+                        if (parts.length < 9) throw new IllegalArgumentException("Not enough fields for CargoShip");
                         CargoShip s = new CargoShip(parts[1], parts[2],
                                 Double.parseDouble(parts[3]),   // maxSpeed
                                 Boolean.parseBoolean(parts[4])); // hasSail
@@ -125,10 +131,10 @@ public static List<Vehicle> loadFleet() {
                         if (Boolean.parseBoolean(parts[8])) s.scheduleMaintenance(); // needsMaintenance
                         fleet.add(s);
                     }
-                    default -> System.out.println("Unknown type: " + type);
+                    default -> System.out.println("Unknown type: " + type + " at line " + lineNo);
                 }
             } catch (Exception e) {
-                System.out.println("Error restoring vehicle from line: " + line);
+                System.out.println("Error restoring vehicle from line " + lineNo + ": " + e.getMessage());
             }
         }
     } catch (IOException e) {

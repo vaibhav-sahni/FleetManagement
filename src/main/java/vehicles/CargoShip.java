@@ -23,6 +23,8 @@ public class CargoShip extends WaterVehicle implements CargoCarrier, Maintainabl
 
     @Override
     public void move(double distance) throws InvalidOperationException, InsufficientFuelException {
+        // Prevent movement if maintenance is required
+        if (needsMaintenance()) throw new InvalidOperationException("Vehicle " + getID() + " requires maintenance and cannot move.");
         if (distance < 0) throw new InvalidOperationException("Negative distance");
         double eff = calculateFuelEfficiency();
         if (eff == 0) {

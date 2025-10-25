@@ -23,6 +23,8 @@ public class Bus extends LandVehicle implements FuelConsumable, PassengerCarrier
 
     @Override
     public void move(double distance) throws InvalidOperationException, InsufficientFuelException {
+        // Prevent movement if maintenance is required
+        if (needsMaintenance()) throw new InvalidOperationException("Vehicle " + getID() + " requires maintenance and cannot move.");
         if (distance < 0) throw new InvalidOperationException("Negative distance");
         double needed = distance / calculateFuelEfficiency();
         if (needed > fuelLevel) throw new InsufficientFuelException("Not enough fuel for bus " + getID());

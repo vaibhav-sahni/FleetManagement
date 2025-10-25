@@ -20,6 +20,8 @@ public class Car extends LandVehicle implements FuelConsumable,PassengerCarrier,
 
     @Override
     public void move(double distance) throws InvalidOperationException, InsufficientFuelException {
+        // Prevent movement if maintenance is required
+        if (needsMaintenance()) throw new InvalidOperationException("Vehicle " + getID() + " requires maintenance and cannot move.");
         if (distance < 0) throw new InvalidOperationException("Distance must be > 0");
         double requiredFuel = distance / calculateFuelEfficiency();
         if (requiredFuel > fuelLevel) throw new InsufficientFuelException("Not enough fuel for car " + getID());

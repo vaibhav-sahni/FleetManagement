@@ -33,9 +33,9 @@ Sample run
 - Use the search and sort options to view sorted lists and fastest/slowest vehicles.
 
 Notes
-- The project builds with Maven; ensure you have Java 17+ and Maven installed.
+- The project builds with Maven.
 - Persistence uses relative file path `fleetdata.csv` (working directory) so ensure you run the program from the project root or adjust the path.
-
+r
 Design rationale
 - ArrayList chosen for main storage because we need ordered, indexable, and resizable collection with efficient iteration. HashSet is used to demonstrate uniqueness handling for model names, and TreeSet (on demand) for automatic alphabetical ordering of models.
 

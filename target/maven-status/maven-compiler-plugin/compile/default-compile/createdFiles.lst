@@ -1,9 +1,11 @@
+fleet\Simulation$VehicleTask.class
 vehicles\Airplane.class
 vehicles\Car.class
 vehicles\LandVehicle.class
 interfaces\PassengerCarrier.class
 interfaces\Maintainable.class
 fleet\FleetManager.class
+fleet\SimulationGUI.class
 exceptions\InvalidOperationException.class
 fleet\Persistence.class
 interfaces\CargoCarrier.class
@@ -11,6 +13,8 @@ interfaces\FuelConsumable.class
 vehicles\CargoShip.class
 vehicles\Bus.class
 Main.class
+fleet\Simulation.class
+fleet\SimulationGUI$1.class
 vehicles\Vehicle.class
 vehicles\AirVehicle.class
 vehicles\WaterVehicle.class

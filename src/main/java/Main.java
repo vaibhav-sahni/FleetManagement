@@ -1,8 +1,10 @@
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import fleet.FleetManager;
 import fleet.Persistence;
+import fleet.Simulation;
 import vehicles.Airplane;
 import vehicles.Bus;
 import vehicles.Car;
@@ -13,6 +15,7 @@ import vehicles.Vehicle;
 public class Main {
     static Scanner sc = new Scanner(System.in);
     static FleetManager fleetManager = new FleetManager();
+    private static final Simulation sim = new Simulation();
 
     private static void addVehicleCLI() {
         System.out.print("Enter vehicle type (Car, Truck, Bus, Airplane, CargoShip): ");
@@ -162,6 +165,7 @@ public class Main {
         double weight = sc.nextDouble();
         fleetManager.unloadCargo(id, weight);
     }
+
     private static void displayCargoStatusCLI() {
         System.out.print("Enter vehicle ID to display cargo status: ");
         String id = sc.next().trim();
@@ -210,7 +214,27 @@ public class Main {
         else list.forEach(Vehicle::displayInfo);
     }
 
-    
+    // Simulation CLI helpers
+    private static void showSimulationStatusCLI() {
+        System.out.println("--- Simulation Status Snapshot ---");
+        System.out.println("Highway Distance: " + sim.getHighwayDistance());
+        Map<String, String> snap = sim.getVehicleStatusSnapshot();
+        if (snap.isEmpty()) {
+            System.out.println("No vehicles in simulation. Start simulation first.");
+        } else {
+            snap.forEach((id, status) -> System.out.println(id + ": " + status));
+        }
+    }
+
+    private static void refuelSimulationCLI() {
+        System.out.print("Enter simulation vehicle ID to refuel: ");
+        String id = sc.next().trim();
+        System.out.print("Enter fuel amount to add: ");
+        double amount = sc.nextDouble();
+        sim.refuelVehicle(id, amount);
+        System.out.println("Refuel requested for " + id + ", amount=" + amount);
+    }
+
     public static void main(String[] args) {
         boolean exit = false;
         while(!exit){
@@ -237,8 +261,12 @@ public class Main {
             System.out.println("20. Fastest & Slowest Vehicle");
             System.out.println("21. Display Fleet sorted by Model");
             System.out.println("22. Display Fleet sorted by Speed");
-            System.out.println("23. Exit");
-
+            System.out.println("23. Start Simulation (unsynchronised)");
+            System.out.println("24. Start Simulation (synchronised)");
+            System.out.println("25. Stop Simulation");
+            System.out.println("26. Show Simulation Status");
+            System.out.println("27. Refuel Simulation Vehicle");
+            System.out.println("28. Exit");
 
             System.out.println("Enter your choice: ");
             int choice = sc.nextInt();
@@ -267,6 +295,22 @@ public class Main {
                 case 21 -> displayFleetSortedByModelCLI();
                 case 22 -> displayFleetSortedBySpeedCLI();
                 case 23 -> {
+                    // Start simulation unsynchronised (demonstrate race condition)
+                    sim.startSimulation(false);
+                    System.out.println("Simulation started (unsynchronised). Use option 26 to view status.");
+                }
+                case 24 -> {
+                    // Start simulation with synchronization enabled
+                    sim.startSimulation(true);
+                    System.out.println("Simulation started (synchronised). Use option 26 to view status.");
+                }
+                case 25 -> {
+                    sim.stopSimulation();
+                    System.out.println("Simulation stopped.");
+                }
+                case 26 -> showSimulationStatusCLI();
+                case 27 -> refuelSimulationCLI();
+                case 28 -> {
                     System.out.println("Exiting program...");
                     exit = true;
                 }

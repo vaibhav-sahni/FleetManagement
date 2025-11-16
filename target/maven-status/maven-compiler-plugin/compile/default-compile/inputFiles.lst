@@ -3,6 +3,8 @@ C:\Users\sahni\Documents\GitHub\FleetManagement\src\main\java\exceptions\Invalid
 C:\Users\sahni\Documents\GitHub\FleetManagement\src\main\java\exceptions\OverloadException.java
 C:\Users\sahni\Documents\GitHub\FleetManagement\src\main\java\fleet\FleetManager.java
 C:\Users\sahni\Documents\GitHub\FleetManagement\src\main\java\fleet\Persistence.java
+C:\Users\sahni\Documents\GitHub\FleetManagement\src\main\java\fleet\Simulation.java
+C:\Users\sahni\Documents\GitHub\FleetManagement\src\main\java\fleet\SimulationGUI.java
 C:\Users\sahni\Documents\GitHub\FleetManagement\src\main\java\interfaces\CargoCarrier.java
 C:\Users\sahni\Documents\GitHub\FleetManagement\src\main\java\interfaces\FuelConsumable.java
 C:\Users\sahni\Documents\GitHub\FleetManagement\src\main\java\interfaces\Maintainable.java

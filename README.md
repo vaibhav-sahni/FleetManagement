@@ -1,43 +1,81 @@
-FleetManagement - Assignment 2
+<h1>Fleetmanagement + Multithreaded Highway Simulator</h1>
 
-Overview
-This project is a Fleet Management system that stores vehicles (Car, Truck, Bus, Airplane, CargoShip) and provides operations to add/remove, start journeys, refuel, load/unload cargo, manage passengers, sort/query, and persist fleet data to CSV.
+- **Purpose**: Each vehicle runs on its own thread, updates a shared highway distance counter, and can be controlled via a CLI or a Swing GUI. The simulator includes a deliberate unsynchronized counter to demonstrate lost updates and a synchronized mode to fix the race.
 
-How to compile and run
-- This is a Maven project. From project root run:
+**Tech Stack**
+- **Language**: Java 24
+- **Build**: Maven (`pom.xml`)
+- **UI**: Swing (`SimulationGUI`)
 
-```bash
+**Quick Start**
+- Build the project:
+```cmd
 mvn clean install
-mvn exec:java
+```
+- Run the GUI:
+```cmd
+mvn exec:java -Dexec.mainClass="fleet.SimulationGUI"
+```
+- Run the CLI entry point (if desired):
+```cmd
+mvn exec:java -Dexec.mainClass="Main"
 ```
 
-Or compile/run with javac/java (simple):
-```bash
-cd src/main/java
-javac Main.java
-java Main
-```
+**Main Files & Classes**
+- **`src/main/java/fleet/Simulation.java`**: Core simulation manager. Creates vehicle tasks, starts per-vehicle threads, exposes APIs to start/pause/resume/stop/reset the simulation, and supports per-vehicle pause/resume and refuelling.
+- **`src/main/java/fleet/SimulationGUI.java`**: Swing UI with a `JTable` showing vehicles, controls to start (unsynchronised/synchronised), pause/resume/stop, refuel, per-vehicle pause/resume, and reset.
+- **`src/main/java/Main.java`**: CLI entry (menu-driven) — provides alternate control for starting, stopping and inspecting the simulation.
+- **`src/main/java/vehicles/`**: Vehicle implementations (`Car`, `Bus`, `Truck`, `Vehicle` base class).
 
-Collections used
-- ArrayList<Vehicle> (in `fleet.FleetManager`) to store fleet dynamically and allow iteration, sorting, and removals.
-- HashSet<String> (modelSet) to maintain distinct vehicle model names and prevent duplicates.
-- TreeSet<String> is used on-demand to present an alphabetically ordered set of distinct models.
+**Features**
+- **Per-vehicle threads**: Each vehicle runs independently and updates mileage and fuel.
+- **Shared highway counter**: `Simulation.highwayDistance` — can be run unsynchronised (race condition) or synchronised (fixed).
+- **Pause/Resume**: Global pause/resume for the whole simulation.
+- **Per-vehicle Pause/Resume**: Pause or resume individual vehicles from the GUI (drop-down + buttons).
+- **Refuel**: Refuelling updates fuel only and does not change pause/run state. (If a vehicle is paused it remains paused after refuel.)
+- **Reset**: Resets highway distance and elapsed time to zero and re-initialises vehicles (refuel + Ready state).
 
-File I/O / Persistence
-- Fleet is saved to `fleetdata.csv` in CSV format by `fleet.Persistence.saveFleet(...)`.
-- Loader `fleet.Persistence.loadFleet()` reads `fleetdata.csv`, skips comment lines, and gracefully handles malformed lines by logging and continuing.
-- A sample `fleetdata.csv` is included in the repository root.
+**Thread-safety note**
+- The GUI uses `Simulation.getVehicleTableSnapshot()` to build a read-only copy of vehicle data for display. Because the method returns a newly constructed list/array snapshot and the GUI only reads from it on the Event Dispatch Thread, additional synchronization is not required for correctness in this monitoring UI. Values may still change immediately after the snapshot is taken, but it does maintain thread safety nevertheless.
 
-Sample run
-- Start program and choose menu options 7 (Save Fleet) and 8 (Load Fleet) to persist/load data.
-- Use the search and sort options to view sorted lists and fastest/slowest vehicles.
+Considering it's a read-only operation, there isn't anything that would lead to a race condition other than the highway counter, for which the simulation already provides both unsynchronised (demo) and synchronised options.
 
-Notes
-- The project builds with Maven.
-- Persistence uses relative file path `fleetdata.csv` (working directory) so ensure you run the program from the project root or adjust the path.
-r
-Design rationale
-- ArrayList chosen for main storage because we need ordered, indexable, and resizable collection with efficient iteration. HashSet is used to demonstrate uniqueness handling for model names, and TreeSet (on demand) for automatic alphabetical ordering of models.
+**Thread-safe collections used**
+- To make concurrent iteration and lifecycle updates robust, `Simulation` uses thread-safe collections:
+    - `tasks` and `threads` are `CopyOnWriteArrayList` instances — safe to iterate from the GUI while the simulation adds/removes entries.
+    - `vehicleStatus` is a `ConcurrentHashMap` — supports concurrent reads/writes without external synchronization.
 
-Contact
-For questions, inspect the source files under `src/main/java`.
+These choices match the access pattern (many reads from the GUI, infrequent writes during start/stop/reset) and reduce the chance of concurrent-iteration issues. If you later need fully-consistent multi-field snapshots, consider short, explicit locking when building that snapshot.
+
+<h2>GUI Explanation</h2>
+
+![GUI](docs/screenshots/GUI.png)
+
+<ol>
+    <li>Start (unsynchronised) - Starts the unsynchronised version of the simulation for all threads</li>
+    <li>Start (synchronised) - Starts the synchronised version of the simulation for all threads</li>
+    <li>Pause - Pauses simulation for all threads</li>
+    <li>Resume - Resumes simulation for all threads</li>
+    <li>Stop - Ends simulation for all threads</li>
+    <li>Reset - Sets all threads to their initialized state before the simulation</li>
+    <li>Refuel - To fill fuel in a vehicle</li>
+</ol>
+
+
+<h2>Unsynced Threads (Race Condition)</h2>
+
+
+![Unsynced](docs/screenshots/unsynced.png)
+
+<p>Here we can clearly see, when the threads arent synchronized, the critical section variable ""Highway distance" isnt correctly updating.
+Each vehicles mileage is 8, and the total distance should be 24.
+
+However, due to race condition, the value isnt updated properly by all threads, leading to mismatch</p>
+
+<h2>Synced Threads</h2>
+
+<p>After putting the critical section (updating of the highway distance) in a synchronised block, we can clearly see the highway distance is the correct sum of he individual mileages of the individual threads</p>
+
+![Synced](docs/screenshots/synced.png)
+
+<p></p>

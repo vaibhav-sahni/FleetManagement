@@ -58,7 +58,7 @@ public class SimulationGUI {
             // If the requested look and feel is not available, fall back to the default.
             System.err.println("Warning: unable to set look and feel: " + ex.getMessage());
         }
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setPreferredSize(new Dimension(1000, 520));
         frame.setMinimumSize(new Dimension(1000, 520));
 

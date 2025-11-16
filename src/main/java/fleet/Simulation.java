@@ -1,9 +1,9 @@
 package fleet;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 
 import exceptions.InsufficientFuelException;
@@ -24,9 +24,11 @@ public class Simulation implements Runnable {
     private static final Object highwayLock = new Object();
     private static final ReentrantLock highwayReLock = new ReentrantLock();
 
-    private final List<Thread> threads = new ArrayList<>();
-    private final List<VehicleTask> tasks = new ArrayList<>();
-    private final Map<String, String> vehicleStatus = new HashMap<>();
+    // Use thread-safe collections to make iteration from the GUI safe
+    // while lifecycle operations (start/stop/reset) modify the lists.
+    private final List<Thread> threads = new CopyOnWriteArrayList<>();
+    private final List<VehicleTask> tasks = new CopyOnWriteArrayList<>();
+    private final Map<String, String> vehicleStatus = new ConcurrentHashMap<>();
 
     // control flags
     // `running` indicates whether a simulation session is active
@@ -235,7 +237,7 @@ public class Simulation implements Runnable {
     }
 
     public Map<String, String> getVehicleStatusSnapshot() {
-        Map<String, String> snap = new HashMap<>();
+        Map<String, String> snap = new ConcurrentHashMap<>();
         for (VehicleTask t : tasks) {
             snap.put(t.getVehicle().getID(), t.getStatus());
         }
